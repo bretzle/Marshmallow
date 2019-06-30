@@ -26,14 +26,25 @@ public class YamlConfiguration {
     public Object get(String key) {
         String[] keys = key.split("[.]");
 
-        if (keys.length == 1) {
-            return data.get(key);
-        } else {
-            Map<String, Object> nested = (Map<String, Object>) data.get(keys[0]);
-            for (int i = 0; i < keys.length - 2; i++) {
-                nested = (Map<String, Object>) nested.get(keys[i]);
+        if (key.contains(" ")) {
+            throw new IllegalArgumentException("A key cannot contain whitespace");
+        }
+
+        try {
+            if (keys.length == 1) {
+                if (data.containsKey(key))
+                    return data.get(key);
+                else
+                    throw new IllegalArgumentException("The given key is invalid");
+            } else {
+                Map<String, Object> nested = (Map<String, Object>) data.get(keys[0]);
+                for (int i = 0; i < keys.length - 2; i++) {
+                    nested = (Map<String, Object>) nested.get(keys[i]);
+                }
+                return nested.get(keys[keys.length - 1]);
             }
-            return nested.get(keys[keys.length - 1]);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("The given key is invalid");
         }
     }
 
@@ -42,6 +53,11 @@ public class YamlConfiguration {
     }
 
     public List<Object> getList(String key) {
-        return (List<Object>) get(key);
+        Object obj = get(key);
+
+        if (obj instanceof List) {
+            return (List) obj;
+        }
+        throw new IllegalArgumentException("The given key does not exist or is not a list");
     }
 }

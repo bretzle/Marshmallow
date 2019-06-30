@@ -1,0 +1,18 @@
+
+simpleString: 'im just a value'
+simpleInt: 12
+simpleLong: 548589935159017473
+simpleBoolean: true
+
+nested:
+  nestedValue: 'im nested'
+  someToken: 'im a token'
+  nestedList:
+    - 'first'
+    - 'second'
+    - 'third'
+
+someList:
+  - 'first'
+  - 'second'
+  - 'third'
