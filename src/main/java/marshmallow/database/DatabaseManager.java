@@ -16,7 +16,7 @@ public class DatabaseManager {
         this.marshmallow = marshmallow;
     }
 
-    public boolean connect() {
+    public void connect() {
         try {
             if (connection == null) {
                 connection = new Database(this);
@@ -24,7 +24,10 @@ public class DatabaseManager {
         } catch (UnknownHostException e) {
             throw new DatabaseException("Could not connect to the mongoDB", e);
         }
-        return true;
+    }
+
+    public boolean isOpen() {
+        return connection != null;
     }
 
     public Marshmallow getMarshmallow() {
