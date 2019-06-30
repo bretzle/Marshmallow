@@ -7,6 +7,8 @@ import marshmallow.config.yaml.YamlConfiguration;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class Configuration {
@@ -119,7 +121,22 @@ public class Configuration {
         return (String) fileConfiguration.get(key);
     }
 
-    public long getLong(String key) {
-        return (long) fileConfiguration.get(key);
+    public long getLong(String key, long fallback) {
+        try {
+            return (long) fileConfiguration.get(key);
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    public List<String> getStringList(String key) {
+        List<String> strings = new ArrayList<>();
+        List<Object> objects = fileConfiguration.getList(key);
+
+        for (Object o : objects) {
+            strings.add((String) o);
+        }
+
+        return strings;
     }
 }

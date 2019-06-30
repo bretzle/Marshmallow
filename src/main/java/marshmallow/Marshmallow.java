@@ -2,11 +2,22 @@ package marshmallow;
 
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import lombok.extern.slf4j.Slf4j;
+import marshmallow.admin.BotAdmin;
 import marshmallow.config.Configuration;
 import marshmallow.config.ConstantsConfig;
 import marshmallow.gui.ConsoleColor;
+import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.utils.SessionControllerAdapter;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.slf4j.Logger;
+
+import javax.security.auth.login.LoginException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 
 @Slf4j
 public class Marshmallow {
@@ -15,6 +26,8 @@ public class Marshmallow {
     private final Settings settings;
     private final Configuration config;
     private final ConstantsConfig constants;
+    private final BotAdmin botAdmins;
+    private ShardManager shardManager = null;
 
     public Marshmallow(Settings settings) {
         this.settings = settings;
@@ -39,6 +52,18 @@ public class Marshmallow {
 
             System.exit(Constants.EXIT_CODE_NORMAL);
         }
+
+        botAdmins = new BotAdmin(this, Collections.unmodifiableSet(new HashSet<>(
+                config.getStringList("botAccess")
+        )));
+
+        log.info("Added {} Bot Admins.", config.getStringList("botAccess").size());
+
+        try {
+            shardManager = buildShardManager();
+        } catch (LoginException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getVersionInfo() {
@@ -54,5 +79,33 @@ public class Marshmallow {
 
     public static Logger getLogger() {
         return log;
+    }
+
+    public Configuration getConfig() {
+        return config;
+    }
+
+    public ConstantsConfig getConstants() {
+        return constants;
+    }
+
+    public ShardManager getShardManager() {
+        return shardManager;
+    }
+
+    private ShardManager buildShardManager() throws LoginException {
+        DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
+                .setSessionController(new SessionControllerAdapter())
+                .setToken(config.getString("discord.token"))
+                .setGame(Game.watching("me boot up..."))
+                .setBulkDeleteSplittingEnabled(false)
+                .setEnableShutdownHook(false)
+                .setAutoReconnect(true)
+                .setAudioEnabled(true)
+                .setContextEnabled(true)
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
+                .setShardsTotal(settings.getShardCount());
+
+        return builder.build();
     }
 }
