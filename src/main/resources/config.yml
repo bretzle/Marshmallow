@@ -1,0 +1,7 @@
+
+enviroment: 'development'
+
+discord:
+  clientID: 'clientID'
+  token: 'token'
+  oauth: 'https://discordapp.com/oauth2/authorize?&client_id=<client_id>&scope=bot&permissions=66186303'
