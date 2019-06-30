@@ -21,7 +21,7 @@ public class Configuration {
         this.fileName = name;
         this.folder = folder;
         this.configFile = new File(folder, name);
-        this.fileConfiguration = new YamlConfiguration(name);
+        this.fileConfiguration = new YamlConfiguration(configFile);
 
         classLoader = marshmallow.getClass().getClassLoader();
     }
@@ -40,7 +40,7 @@ public class Configuration {
             }
             configFile = new File(folder, fileName);
         }
-        fileConfiguration = new YamlConfiguration(fileName);
+        fileConfiguration = new YamlConfiguration(configFile);
     }
 
     private void save() {
@@ -113,5 +113,13 @@ public class Configuration {
 
     public boolean exists() {
         return configFile != null && configFile.exists() && configFile.isFile();
+    }
+
+    public String getString(String key) {
+        return (String) fileConfiguration.get(key);
+    }
+
+    public long getLong(String key) {
+        return (long) fileConfiguration.get(key);
     }
 }
