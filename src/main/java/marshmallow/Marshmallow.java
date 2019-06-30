@@ -29,6 +29,16 @@ public class Marshmallow {
 
         config = new Configuration(this, null, "config.yml");
         constants = new ConstantsConfig(this);
+
+        if (!config.exists() || !constants.exists()) {
+            log.info("The {} or {} configuration files are missing.", "config.yml", "constants.yml");
+            log.info("Creating file(s) and terminating program...");
+
+            config.saveDefaultConfig();
+            constants.saveDefaultConfig();
+
+            System.exit(Constants.EXIT_CODE_NORMAL);
+        }
     }
 
     private String getVersionInfo() {

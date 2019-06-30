@@ -111,7 +111,7 @@ public class Configuration {
         }
     }
 
-    private boolean exists() {
+    public boolean exists() {
         return configFile != null && configFile.exists() && configFile.isFile();
     }
 }
