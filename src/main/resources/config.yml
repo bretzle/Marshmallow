@@ -6,6 +6,13 @@ discord:
   token: 'token'
   oauth: 'https://discordapp.com/oauth2/authorize?&client_id=<client_id>&scope=bot&permissions=66186303'
 
+database:
+  database: 'marshmallow'
+  host: 'localhost'
+  port: '27017'
+  username: 'username'
+  password: 'password'
+
 botAccess:
   - '203297462746611712'
   - '363845910477799448'

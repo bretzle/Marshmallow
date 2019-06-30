@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import marshmallow.admin.BotAdmin;
 import marshmallow.config.Configuration;
 import marshmallow.config.ConstantsConfig;
+import marshmallow.database.DatabaseManager;
 import marshmallow.gui.ConsoleColor;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -26,6 +27,7 @@ public class Marshmallow {
     private final Settings settings;
     private final Configuration config;
     private final ConstantsConfig constants;
+    private final DatabaseManager database;
     private final BotAdmin botAdmins;
     private ShardManager shardManager = null;
 
@@ -58,6 +60,10 @@ public class Marshmallow {
         )));
 
         log.info("Added {} Bot Admins.", config.getStringList("botAccess").size());
+
+        log.info("Registering and connecting to database");
+        database = new DatabaseManager(this);
+        database.connect();
 
         try {
             shardManager = buildShardManager();
