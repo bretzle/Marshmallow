@@ -23,6 +23,10 @@ public class YamlConfiguration {
         data = new Yaml().load(inputStream);
     }
 
+    public Map<String, Object> getRawData() {
+        return data;
+    }
+
     public Object get(String key) {
         String[] keys = key.split("[.]");
 
@@ -48,8 +52,21 @@ public class YamlConfiguration {
         }
     }
 
-    public Map<String, Object> getRawData() {
-        return data;
+    public String getString(String key) {
+        Object obj = get(key);
+
+        if (obj instanceof String) {
+            return (String) obj;
+        }
+        throw new IllegalArgumentException("The given key does not exist or is not a list");
+    }
+
+    public String getString(String key, String fallback) {
+        try {
+            return getString(key);
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
     }
 
     public List<Object> getList(String key) {
