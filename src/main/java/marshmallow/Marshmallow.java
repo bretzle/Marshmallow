@@ -4,9 +4,11 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.admin.BotAdmin;
 import marshmallow.commands.Command;
+import marshmallow.commands.CommandManager;
 import marshmallow.config.Configuration;
 import marshmallow.config.ConstantsConfig;
 import marshmallow.database.DatabaseManager;
+import marshmallow.events.MainEventHandler;
 import marshmallow.gui.ConsoleColor;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -71,7 +73,7 @@ public class Marshmallow {
         database.connect();
 
         log.info("Registering commands...");
-        loadPackage("marshmallow.commands", null);
+        loadPackage("marshmallow.commands", CommandManager::register);
 
         try {
             shardManager = buildShardManager();
@@ -107,6 +109,10 @@ public class Marshmallow {
         return shardManager;
     }
 
+    public Settings getSettings() {
+        return settings;
+    }
+
     private ShardManager buildShardManager() throws LoginException {
         DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder()
                 .setSessionController(new SessionControllerAdapter())
@@ -118,8 +124,9 @@ public class Marshmallow {
                 .setAudioEnabled(true)
                 .setContextEnabled(true)
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
-                .setShardsTotal(settings.getShardCount());
-
+                .setShardsTotal(settings.getShardCount())
+                .addEventListeners(new MainEventHandler(this));
+        
         return builder.build();
     }
 
