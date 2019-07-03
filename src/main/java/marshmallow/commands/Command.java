@@ -31,9 +31,9 @@ public abstract class Command {
 
     public abstract List<String> getTriggers();
 
-    public Category getCategory() {
-        return null;
-    }
+    public abstract List<String> getMiddleware();
+
+    public abstract Category getCategory();
 
     public abstract List<CommandGroup> getGroups();
 

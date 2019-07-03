@@ -5,6 +5,7 @@ import marshmallow.commands.Command;
 import marshmallow.commands.CommandGroup;
 import marshmallow.commands.Context;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class PingCommand extends Command {
 
     @Override
     public List<CommandGroup> getGroups() {
-        return null;
+        return Collections.singletonList(CommandGroup.MISCELLANEOUS);
     }
 
     @Override

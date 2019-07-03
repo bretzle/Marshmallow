@@ -8,7 +8,7 @@ import marshmallow.commands.CommandManager;
 import marshmallow.config.Configuration;
 import marshmallow.config.ConstantsConfig;
 import marshmallow.database.DatabaseManager;
-import marshmallow.events.MainEventHandler;
+import marshmallow.handlers.MainEventHandler;
 import marshmallow.gui.ConsoleColor;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
