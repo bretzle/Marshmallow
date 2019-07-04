@@ -6,10 +6,12 @@ import com.mongodb.DBObject;
 import marshmallow.database.Database;
 import marshmallow.database.DatabaseManager;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class DatabaseAdapter {
 
@@ -21,7 +23,7 @@ public class DatabaseAdapter {
         DatabaseAdapter.database = dbm.getConnection();
     }
 
-    public static Map<String, Object> getGuild(Guild guild) {
+    public static Map<String, Object> getGuild(Guild guild) throws NullPointerException {
         return getGuild(guild.getId());
     }
 
@@ -32,8 +34,15 @@ public class DatabaseAdapter {
         return collection.find(query).one().toMap();
     }
 
+    public static Map<String, Object> getPlayer(String userID) throws NullPointerException {
+        DBCollection collection = database.getCollection("players");
+        DBObject query = new BasicDBObject("_id", userID);
+
+        return collection.find(query).one().toMap();
+    }
+
     public static void insertNewGuild(Guild guild) {
-        HashMap<String, Object> items = generateGuild();
+        TreeMap<String, Object> items = generateGuild();
 
         items.put("_id", guild.getId());
         items.put("name", guild.getName());
@@ -44,7 +53,7 @@ public class DatabaseAdapter {
     }
 
     public static void insertNewGuild(String guildID) {
-        HashMap<String, Object> items = generateGuild();
+        TreeMap<String, Object> items = generateGuild();
 
         items.put("_id", guildID);
 
@@ -53,9 +62,16 @@ public class DatabaseAdapter {
         database.getCollection("guilds").insert(object);
     }
 
+    public static void insertNewPlayer(User user, Guild guild) {
+        Map<String, Object> playerEntry = generatePlayer(user, guild);
 
-    private static HashMap<String, Object> generateGuild() {
-        HashMap<String, Object> items = new HashMap<>();
+        DBObject object = new BasicDBObject(playerEntry);
+
+        database.getCollection("players").insert(object);
+    }
+
+    private static TreeMap<String, Object> generateGuild() {
+        TreeMap<String, Object> items = new TreeMap<>();
 
         items.put("_id", "");
         items.put("name", "");
@@ -83,5 +99,22 @@ public class DatabaseAdapter {
         items.put("channels", new ArrayList<>());
 
         return items;
+    }
+
+    private static TreeMap<String, Object> generatePlayer(User user, Guild guild) {
+        TreeMap<String, Object> map = new TreeMap<>();
+        TreeMap<String, Object> experienceMap = new TreeMap<>();
+
+        experienceMap.put("id", guild.getId());
+        experienceMap.put("value", 100);
+
+        map.put("_id", user.getId());
+        map.put("username", user.getName());
+        map.put("discriminator", user.getDiscriminator());
+        map.put("avatar", user.getAvatarId());
+        map.put("active", true);
+        map.put("experience", Arrays.asList(experienceMap));
+
+        return map;
     }
 }
