@@ -9,6 +9,7 @@ import marshmallow.database.controllers.GuildController;
 import marshmallow.database.controllers.PlayerController;
 import marshmallow.database.transformers.GuildTransformer;
 import marshmallow.handlers.DatabaseEventHolder;
+import marshmallow.middleware.MiddlewareStack;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +42,8 @@ public class MessageEventAdapter {
 
             CommandContainer container = CommandManager.getCommand(marshmallow, event.getMessage(), event.getMessage().getContentRaw());
             if (container!=null&& canExecuteCommand(event, container)) {
-                // todo invoke command
+                invokeMiddleWareStack(new MiddlewareStack(event.getMessage(), container, databaseEventHolder, true));
+                return;
             }
         });
     }
@@ -67,5 +69,9 @@ public class MessageEventAdapter {
 
             return new DatabaseEventHolder(guild, PlayerController.fetchPlayer(marshmallow, event.getMessage()));
         });
+    }
+
+    private void invokeMiddleWareStack(MiddlewareStack stack) {
+        commandService.submit(stack::next);
     }
 }

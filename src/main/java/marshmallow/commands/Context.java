@@ -3,6 +3,7 @@ package marshmallow.commands;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.config.yaml.YamlConfiguration;
+import marshmallow.handlers.DatabaseEventHolder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -25,24 +26,30 @@ public class Context {
 
     @Getter private final boolean mentionableCommand;
     private final String aliasArguments;
+    private final DatabaseEventHolder databaseEventHolder;
 
     private YamlConfiguration i18n;
     private String i18nCommandPrefix;
 
-    public Context(CommandContainer container, Message message) {
-        this(container, message, false, new String[0]);
+    public Context(CommandContainer container, DatabaseEventHolder databaseEventHolder, Message message) {
+        this(container, databaseEventHolder, message, false, new String[0]);
     }
 
-    public Context(CommandContainer container, Message message, boolean mentionableCommand, String[] aliasArguments) {
-        if (container != null) setI18nCommandPrefix(container);
+    public Context(CommandContainer container, DatabaseEventHolder databaseEventHolder, Message message, boolean mentionableCommand, String[] aliasArguments) {
+        if (container != null) {
+            setI18nCommandPrefix(container);
+        }
 
         this.message = message;
+
         this.guild = message.getGuild();
         this.member = message.getMember();
         this.channel = message.getTextChannel();
+        this.databaseEventHolder = databaseEventHolder;
 
         this.mentionableCommand = mentionableCommand;
-        this.aliasArguments = aliasArguments.length == 0 ? null : String.join(" ", aliasArguments);
+        this.aliasArguments = aliasArguments.length == 0 ?
+                null : String.join(" ", aliasArguments);
     }
 
     public boolean canDelete() {

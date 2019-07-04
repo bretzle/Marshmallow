@@ -81,6 +81,7 @@ public class Marshmallow {
 
         log.info("Registering commands...");
         loadPackage("marshmallow.commands", CommandManager::register);
+        log.info("Added {} commands", CommandManager.getCommands().size());
 
         try {
             shardManager = buildShardManager();

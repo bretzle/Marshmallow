@@ -16,6 +16,7 @@ public class CommandManager {
 
     public static void register(Command command) {
         log.info("Registered " + command.getName() + "command.");
+        // todo actually register commands
     }
 
     public static Collection<CommandContainer> getCommands() {
