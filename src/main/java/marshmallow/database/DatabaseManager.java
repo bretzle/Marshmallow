@@ -3,6 +3,7 @@ package marshmallow.database;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.Marshmallow;
 import marshmallow.exceptions.DatabaseException;
+import marshmallow.util.DatabaseAdapter;
 
 import java.net.UnknownHostException;
 
@@ -20,6 +21,7 @@ public class DatabaseManager {
         try {
             if (connection == null) {
                 connection = new Database(this);
+                DatabaseAdapter.injectDatabase(this);
             }
         } catch (UnknownHostException e) {
             throw new DatabaseException("Could not connect to the mongoDB", e);
@@ -28,6 +30,10 @@ public class DatabaseManager {
 
     public boolean isOpen() {
         return connection != null;
+    }
+
+    public Database getConnection() {
+        return connection;
     }
 
     public Marshmallow getMarshmallow() {
