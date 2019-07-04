@@ -66,6 +66,6 @@ public abstract class Command {
     }
 
     public final String generateCommandPrefix(Message message) {
-        return CategoryHandler.fromCommand(this).getPrefix(message);
+        return CategoryManager.fromCommand(this).getPrefix(message);
     }
 }

@@ -121,6 +121,14 @@ public class Configuration {
         return (String) fileConfiguration.get(key);
     }
 
+    public String getString(String key, String fallback) {
+        try {
+            return (String) fileConfiguration.get(key);
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
     public long getLong(String key, long fallback) {
         try {
             return (long) fileConfiguration.get(key);

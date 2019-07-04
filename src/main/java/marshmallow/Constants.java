@@ -25,4 +25,6 @@ public class Constants {
     public static final String SOURCE_URI = "https://github.com/bretzle/Marshmallow/tree/master/src/main/java/marshmallow/commands/%s/%s.java";
 
     public static final String DEFAULT_COMMAND_PREFIX = "?";
+    public static final String PACKAGE_COMMAND_PATH = "marshmallow.commands";
+    public static final String DEFAULT_SYSTEM_PREFIX = ";";
 }

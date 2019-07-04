@@ -1,10 +1,14 @@
 package marshmallow.commands;
 
 import lombok.extern.slf4j.Slf4j;
+import marshmallow.Constants;
 import marshmallow.Marshmallow;
 import marshmallow.database.controllers.GuildController;
 import marshmallow.database.transformers.GuildTransformer;
+import marshmallow.exceptions.IllegalCommandException;
+import marshmallow.middleware.MiddlewareManager;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -15,8 +19,46 @@ public class CommandManager {
     private static final Set<CommandContainer> COMMANDS = new HashSet<>();
 
     public static void register(Command command) {
-        log.info("Registered " + command.getName() + "command.");
-        // todo actually register commands
+        Category category = CategoryManager.fromCommand(command);
+        Checks.notNull(category, String.format("%s :: %s", command.getName(), "Invalid command category, command category"));
+
+//        try {
+//            Checks.notNull(command.getDescription(new FakeCommandMessage()), String.format("%s :: %s", command.getName(), "Command description"));
+//            Checks.notNull(command.getDescription(null), String.format("%s :: %s", command.getName(), "Command description with null"));
+//            Checks.notNull(command.getDescription(), String.format("%s :: %s", command.getName(), "Command description with no arguments"));
+//        } catch (StackOverflowError e) {
+//            throw new MissingCommandDescriptionException(command);
+//        }
+
+        for (String trigger : command.getTriggers()) {
+            for (CommandContainer container : COMMANDS) {
+                for (String subTrigger : container.getTriggers()) {
+                    if (Objects.equals(category.getPrefix()+trigger, container.getDefaultPrefix()+subTrigger)) {
+                        throw new IllegalCommandException(category.getPrefix() + trigger, command.getName(), container.getCommand().getName());
+                    }
+                }
+            }
+        }
+
+        for (String middleware : command.getMiddleware()) {
+            String[] parts = middleware.split(":");
+
+            if (MiddlewareManager.getMiddleware(parts[0])==null) {
+                throw new IllegalArgumentException("Middleware reference may not be null, " + parts[0] + " is not a valid middleware");
+            }
+        }
+
+        String commandURI = null;
+
+        CommandSource annotation = command.getClass().getAnnotation(CommandSource.class);
+        if (annotation != null && annotation.uri().trim().length() > 0) {
+            commandURI = annotation.uri();
+        } else if (command.getClass().getTypeName().startsWith(Constants.PACKAGE_COMMAND_PATH)) {
+            String[] split = command.getClass().toString().split("\\.");
+
+            commandURI = String.format(Constants.SOURCE_URI, split[split.length - 2], split[split.length - 1]);
+            COMMANDS.add(new CommandContainer(command, category, commandURI));
+        }
     }
 
     public static Collection<CommandContainer> getCommands() {

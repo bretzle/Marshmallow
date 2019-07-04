@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryHandler {
+public class CategoryManager {
 
     private static final List<Category> VALUES = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class CategoryHandler {
     public static Category random(boolean includeGlobals) {
         return VALUES.stream()
                 .filter(category -> !category.isGlobal())
-                .findAny().orElseGet(CategoryHandler::random);
+                .findAny().orElseGet(CategoryManager::random);
     }
 
     public static List<Category> getValues() {

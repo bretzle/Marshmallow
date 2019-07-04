@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.admin.BotAdmin;
+import marshmallow.commands.CategoryManager;
 import marshmallow.commands.Command;
 import marshmallow.commands.CommandManager;
 import marshmallow.config.Configuration;
@@ -12,6 +13,7 @@ import marshmallow.config.ConstantsConfig;
 import marshmallow.database.DatabaseManager;
 import marshmallow.handlers.MainEventHandler;
 import marshmallow.gui.ConsoleColor;
+import marshmallow.middleware.MiddlewareManager;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
@@ -79,6 +81,23 @@ public class Marshmallow {
         database = new DatabaseManager(this);
         database.connect();
 
+        log.info("Registering default middlewares");
+        MiddlewareManager.initialize(this);
+
+        log.info("Registering default command categories");
+
+        String defaultPrefix = config.getString("default-prefix", Constants.DEFAULT_COMMAND_PREFIX);
+        String systemPrefix = config.getString("system-prefix", Constants.DEFAULT_SYSTEM_PREFIX);
+
+        CategoryManager.addCategory(this, "Administration", defaultPrefix);
+        CategoryManager.addCategory(this, "Help", defaultPrefix);
+        CategoryManager.addCategory(this, "Fun", defaultPrefix);
+        CategoryManager.addCategory(this, "Interaction", defaultPrefix);
+        CategoryManager.addCategory(this, "Music", defaultPrefix);
+        CategoryManager.addCategory(this, "Search", defaultPrefix);
+        CategoryManager.addCategory(this, "Utility", defaultPrefix);
+        CategoryManager.addCategory(this, "System", systemPrefix);
+
         log.info("Registering commands...");
         loadPackage("marshmallow.commands", CommandManager::register);
         log.info("Added {} commands", CommandManager.getCommands().size());
@@ -138,7 +157,7 @@ public class Marshmallow {
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.GAME))
                 .setShardsTotal(settings.getShardCount())
                 .addEventListeners(new MainEventHandler(this));
-        
+
         return builder.build();
     }
 
