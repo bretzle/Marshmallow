@@ -2,6 +2,8 @@ package marshmallow.language;
 
 import marshmallow.Marshmallow;
 import marshmallow.config.yaml.YamlConfiguration;
+import marshmallow.database.controllers.GuildController;
+import marshmallow.database.transformers.GuildTransformer;
 import net.dv8tion.jda.core.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +68,11 @@ public class I18n {
     @Nonnull
     public static LanguageContainer getLocale(@Nonnull Guild guild) {
         try {
-//            GuildTransformer transformer = GuildController.fetchGuild(marshmallow, guild);
-//
-//            if (transformer != null) {
-//                return getLocale(transformer);
-//            } todo
+            GuildTransformer transformer = GuildController.fetchGuild(marshmallow, guild);
+
+            if (transformer != null) {
+                return getLocale(transformer);
+            }
             return defaultLanguage;
         } catch (Exception e) {
             log.error("Error when reading entity", e);
@@ -78,19 +80,19 @@ public class I18n {
         return defaultLanguage;
     }
 
-//    @Nonnull
-//    public static LanguageContainer getLocale(@Nonnull GuildTransformer transformer) {
-//        try {
-//            for (LanguageContainer locale : languages) {
-//                if (locale.getLanguage().getCode().equalsIgnoreCase(transformer.getLocale())) {
-//                    return locale;
-//                }
-//            }
-//        } catch (Exception e) {
-//            log.error("Error when reading entity", e);
-//        }
-//        return defaultLanguage;
-//    }
+    @Nonnull
+    public static LanguageContainer getLocale(@Nonnull GuildTransformer transformer) {
+        try {
+            for (LanguageContainer locale : languages) {
+                if (locale.getLanguage().getCode().equalsIgnoreCase(transformer.getLocale())) {
+                    return locale;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error when reading entity", e);
+        }
+        return defaultLanguage;
+    }
 
     @Nonnull
     public static LanguageContainer getLocale(Language language) {

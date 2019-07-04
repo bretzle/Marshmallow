@@ -1,5 +1,7 @@
 package marshmallow;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.admin.BotAdmin;
@@ -37,6 +39,11 @@ public class Marshmallow {
     private final DatabaseManager database;
     private final BotAdmin botAdmins;
     private ShardManager shardManager = null;
+
+    public static final Gson gson = new GsonBuilder()
+            .disableHtmlEscaping()
+            .serializeNulls()
+            .create();
 
     public Marshmallow(Settings settings) {
         this.settings = settings;
@@ -111,6 +118,10 @@ public class Marshmallow {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public DatabaseManager getDatabase() {
+        return database;
     }
 
     private ShardManager buildShardManager() throws LoginException {
