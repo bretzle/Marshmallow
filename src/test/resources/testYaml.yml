@@ -16,3 +16,7 @@ someList:
   - 'first'
   - 'second'
   - 'third'
+
+utility:
+  ping:
+    message: 'hi'

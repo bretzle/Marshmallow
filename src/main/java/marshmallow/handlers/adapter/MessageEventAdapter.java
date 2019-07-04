@@ -35,6 +35,8 @@ public class MessageEventAdapter {
         if (event.getAuthor().isBot()) return;
         if (event.getChannelType().isGuild() && !event.getTextChannel().canTalk()) return;
 
+        log.info("received event: " + event.toString());
+
         loadDatabasePropertiesIntoMemory(event).thenAccept(databaseEventHolder -> {
             if (databaseEventHolder.getGuild() != null && databaseEventHolder.getPlayer() != null) {
                 // todo give experience for message
@@ -49,10 +51,7 @@ public class MessageEventAdapter {
     }
 
     private boolean canExecuteCommand(MessageReceivedEvent event, CommandContainer container) {
-        if (!container.getCommand().isAllowDM() && !event.getChannelType().isGuild()) {
-            return false;
-        }
-        return true;
+        return container.getCommand().isAllowDM() || event.getChannelType().isGuild();
     }
 
     private CompletableFuture<DatabaseEventHolder> loadDatabasePropertiesIntoMemory(final MessageReceivedEvent event) {

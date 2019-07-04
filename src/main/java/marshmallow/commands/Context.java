@@ -3,30 +3,36 @@ package marshmallow.commands;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.config.yaml.YamlConfiguration;
+import marshmallow.factories.MessageFactory;
+import marshmallow.gui.chat.MessageType;
+import marshmallow.gui.chat.PlaceholderMessage;
 import marshmallow.handlers.DatabaseEventHolder;
+import marshmallow.language.I18n;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Arrays;
 
 @Slf4j
 public class Context {
 
-    @Getter public final Guild guild;
-    @Getter public final Member member;
-    @Getter public final TextChannel channel;
-    @Getter public final Message message;
+    @Getter
+    public final Guild guild;
+    @Getter
+    public final Member member;
+    @Getter
+    public final TextChannel channel;
+    @Getter
+    public final Message message;
 
-    @Getter private final boolean mentionableCommand;
+    @Getter
+    private final boolean mentionableCommand;
     private final String aliasArguments;
     private final DatabaseEventHolder databaseEventHolder;
+    private final CommandContainer container;
 
     private YamlConfiguration i18n;
     private String i18nCommandPrefix;
@@ -36,10 +42,7 @@ public class Context {
     }
 
     public Context(CommandContainer container, DatabaseEventHolder databaseEventHolder, Message message, boolean mentionableCommand, String[] aliasArguments) {
-        if (container != null) {
-            setI18nCommandPrefix(container);
-        }
-
+        this.container = container;
         this.message = message;
 
         this.guild = message.getGuild();
@@ -48,8 +51,7 @@ public class Context {
         this.databaseEventHolder = databaseEventHolder;
 
         this.mentionableCommand = mentionableCommand;
-        this.aliasArguments = aliasArguments.length == 0 ?
-                null : String.join(" ", aliasArguments);
+        this.aliasArguments = aliasArguments.length == 0 ? null : String.join(" ", aliasArguments);
     }
 
     public boolean canDelete() {
@@ -64,6 +66,10 @@ public class Context {
 
     public JDA getJDA() {
         return message.getJDA();
+    }
+
+    public Member getAuthor() {
+        return member;
     }
 
     public String getContentDisplay() {
@@ -101,14 +107,52 @@ public class Context {
         return message.getChannelType().isGuild();
     }
 
-    public void setI18nPrefix(@Nullable String i18nPrefix) {
-        this.i18nCommandPrefix = i18nPrefix;
+    public PlaceholderMessage makeError(String message) {
+        return MessageFactory.makeError(this.message, message);
     }
 
-    public void setI18nCommandPrefix(@Nonnull CommandContainer container) {
-        setI18nPrefix(
-                container.getCategory().getName().toLowerCase() + "."
-                        + container.getCommand().getClass().getSimpleName()
-        );
+    public PlaceholderMessage makeWarning(String message) {
+        return MessageFactory.makeWarning(this.message, message);
+    }
+
+    public PlaceholderMessage makeSuccess(String message) {
+        return MessageFactory.makeSuccess(this.message, message);
+    }
+
+    public PlaceholderMessage makeInfo(String message) {
+        return MessageFactory.makeInfo(this.message, message);
+    }
+
+    public PlaceholderMessage makeEmbeddedMessage(Color color, String message) {
+        return MessageFactory.makeEmbeddedMessage(this.message, color, message);
+    }
+
+    public PlaceholderMessage makeEmbeddedMessage(MessageType type, MessageEmbed.Field... fields) {
+        return makeEmbeddedMessage(type.getColor(), fields);
+    }
+
+    public PlaceholderMessage makeEmbeddedMessage(Color color, MessageEmbed.Field... fields) {
+        return MessageFactory.makeEmbeddedMessage(this.message.getChannel(), color, fields);
+    }
+
+    public PlaceholderMessage makeEmbeddedMessage() {
+        return MessageFactory.makeEmbeddedMessage(this.message.getChannel());
+    }
+
+    public String i18n(String key) {
+        if (i18n == null) {
+            i18n = I18n.get(guild);
+        }
+
+        String comKey =
+                container.getCategory().getName().toLowerCase() + "." +
+                        container.getCommand().getClass().getSimpleName() + "." +
+                        key;
+
+        return i18n.getString(comKey);
+    }
+
+    public Object testI18n(String key) {
+        return i18n.get(key);
     }
 }

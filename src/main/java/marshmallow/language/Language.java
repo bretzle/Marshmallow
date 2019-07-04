@@ -9,17 +9,17 @@ import java.util.List;
 
 public enum Language {
 
-    DA_DK("da", "DK", "Dansk", "Danish"),
-    DE_DE("de", "DE", "Deutsch", "German"),
-    EN_US("en", "US", "English", "English"),
-    ES_ES("es", "ES", "Espanol", "Spanish"),
-    FR_FR("fr", "FR", "French", "French"),
-    HU_HU("hu", "HU", "Magyar", "Hungarian"),
-    NO_NB("no", "NB", "Norsk", "Norwegian"),
-    RU_RU("ru", "RU", "Pусский", "Russian"),
-    IT_IT("it", "IT", "Italiano", "Italian"),
-    NL_NL("nl", "NL", "Nederlands", "Dutch"),
-    ZH_SI("zh", "SI", "中文", "Chinese", "Chinese Simplified", "Zhōngwén");
+//    DA_DK("da", "DK", "Dansk", "Danish"),
+//    DE_DE("de", "DE", "Deutsch", "German"),
+    EN_US("en", "US", "English", "English");
+//    ES_ES("es", "ES", "Espanol", "Spanish"),
+//    FR_FR("fr", "FR", "French", "French"),
+//    HU_HU("hu", "HU", "Magyar", "Hungarian"),
+//    NO_NB("no", "NB", "Norsk", "Norwegian"),
+//    RU_RU("ru", "RU", "Pусский", "Russian"),
+//    IT_IT("it", "IT", "Italiano", "Italian"),
+//    NL_NL("nl", "NL", "Nederlands", "Dutch"),
+//    ZH_SI("zh", "SI", "中文", "Chinese", "Chinese Simplified", "Zhōngwén");
 
     private final String code;
     private final String nativeName;

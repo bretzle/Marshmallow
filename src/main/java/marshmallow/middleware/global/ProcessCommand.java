@@ -1,9 +1,11 @@
 package marshmallow.middleware.global;
 
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import lombok.extern.slf4j.Slf4j;
 import marshmallow.Marshmallow;
 import marshmallow.commands.AliasCommandContainer;
 import marshmallow.commands.Context;
+import marshmallow.factories.MessageFactory;
 import marshmallow.gui.ConsoleColor;
 import marshmallow.middleware.Middleware;
 import marshmallow.middleware.MiddlewareStack;
@@ -11,6 +13,7 @@ import marshmallow.util.ArrayUtil;
 import marshmallow.util.CheckPermissionUtil;
 import marshmallow.util.RestActionUtil;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.exceptions.InsufficientPermissionException;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -63,7 +66,7 @@ public class ProcessCommand extends Middleware {
         );
 
         try {
-            String[] commandArguments = Arrays.copyOfRange(arguments, stack.isMentionableCommand() ? 2 : 1, arguments.length);
+            String[] commandArguments = Arrays.copyOfRange(arguments, stack.isMentionableCommand() ? 1 : 0, arguments.length);
             if (stack.getCommandContainer() instanceof AliasCommandContainer) {
                 AliasCommandContainer container = (AliasCommandContainer) stack.getCommandContainer();
                 Context context = new Context(
@@ -84,8 +87,22 @@ public class ProcessCommand extends Middleware {
             );
             return runCommand(stack, context, commandArguments);
         } catch (Exception e) {
-            // todo
-            e.printStackTrace();
+            if (e instanceof InsufficientPermissionException) {
+                MessageFactory.makeError(message, "Error: " + e.getMessage())
+                        .queue(newMessage -> newMessage.delete().queueAfter(30, TimeUnit.SECONDS, null, RestActionUtil.ignore));
+
+                return false;
+            } else if (e instanceof FriendlyException) {
+                MessageFactory.makeError(message, "Error: " + e.getMessage())
+                        .queue(newMessage -> newMessage.delete().queueAfter(30, TimeUnit.SECONDS, null, RestActionUtil.ignore));
+            }
+
+//            MDC.putCloseable(SentryConstants.SENTRY_MDC_TAG_GUILD, message.getGuild() != null ? message.getGuild().getId() : "PRIVATE");
+//            MDC.putCloseable(SentryConstants.SENTRY_MDC_TAG_SHARD, message.getJDA().getShardInfo().getShardString());
+//            MDC.putCloseable(SentryConstants.SENTRY_MDC_TAG_CHANNEL, message.getChannel().getId());
+//            MDC.putCloseable(SentryConstants.SENTRY_MDC_TAG_AUTHOR, message.getAuthor().getId());
+//            MDC.putCloseable(SentryConstants.SENTRY_MDC_TAG_MESSAGE, message.getContentRaw());
+            log.error("An error occurred while running the " + stack.getCommand().getName(), e);
             return false;
         }
     }

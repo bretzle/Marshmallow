@@ -2,10 +2,8 @@ package marshmallow.config.yaml;
 
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,42 +21,32 @@ public class YamlConfiguration {
         data = new Yaml().load(inputStream);
     }
 
+    public YamlConfiguration(Reader reader) {
+        data = new Yaml().load(reader);
+    }
+
     public Map<String, Object> getRawData() {
         return data;
     }
 
     public Object get(String key) {
-        String[] keys = key.split("[.]");
+        List<String> keys = Arrays.asList(key.split("[.]"));
+        Object value = null;
 
-        if (key.contains(" ")) {
-            throw new IllegalArgumentException("A key cannot contain whitespace");
-        }
-
-        try {
-            if (keys.length == 1) {
-                if (data.containsKey(key))
-                    return data.get(key);
-                else
-                    throw new IllegalArgumentException("The given key is invalid");
+        for (String subKey : keys) {
+            if (subKey.equals(keys.get(0))) {
+                value = data.get(subKey);
             } else {
-                Map<String, Object> nested = (Map<String, Object>) data.get(keys[0]);
-                for (int i = 0; i < keys.length - 2; i++) {
-                    nested = (Map<String, Object>) nested.get(keys[i]);
-                }
-                return nested.get(keys[keys.length - 1]);
+                value = ((Map) value).get(subKey);
             }
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("The given key is invalid");
         }
+
+        return value;
     }
 
     public String getString(String key) {
         Object obj = get(key);
-
-        if (obj instanceof String) {
-            return (String) obj;
-        }
-        throw new IllegalArgumentException("The given key does not exist or is not a list");
+        return (String) obj;
     }
 
     public String getString(String key, String fallback) {
@@ -76,5 +64,14 @@ public class YamlConfiguration {
             return (List) obj;
         }
         throw new IllegalArgumentException("The given key does not exist or is not a list");
+    }
+
+    public boolean contains(String key) {
+        try {
+            get(key);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

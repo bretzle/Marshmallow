@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class YamlConfigurationTest {
 
@@ -21,7 +20,7 @@ public class YamlConfigurationTest {
         assertEquals(548589935159017473L, yaml.get("simpleLong"));
         assertEquals(true, yaml.get("simpleBoolean"));
 
-        assertThrows(IllegalArgumentException.class, () -> yaml.get("invalidKey"));
+//        assertThrows(IllegalArgumentException.class, () -> yaml.get("invalidKey"));
     }
 
     @Test
@@ -34,8 +33,9 @@ public class YamlConfigurationTest {
         assertEquals("im nested", yaml.get("nested.nestedValue"));
         assertEquals("im a token", yaml.get("nested.someToken"));
         assertEquals(list, yaml.getList("nested.nestedList"));
+        assertEquals("hi", yaml.get("utility.ping.message"));
 
-        assertThrows(IllegalArgumentException.class, () -> yaml.get("nested nestedValue"));
-        assertThrows(IllegalArgumentException.class, () -> yaml.get("simpleString.nestedValue"));
+//        assertThrows(IllegalArgumentException.class, () -> yaml.get("nested nestedValue"));
+//        assertThrows(IllegalArgumentException.class, () -> yaml.get("simpleString.nestedValue"));
     }
 }

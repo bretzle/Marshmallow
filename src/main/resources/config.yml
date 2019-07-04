@@ -7,7 +7,7 @@ discord:
   oauth: 'https://discordapp.com/oauth2/authorize?&client_id=<client_id>&scope=bot&permissions=66186303'
 
 database:
-  database: 'marshmallow'
+  databaseName: 'marshmallow'
   host: 'localhost'
   port: '27017'
   username: 'username'

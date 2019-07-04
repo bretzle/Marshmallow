@@ -54,6 +54,7 @@ public class PlayerController {
             return new PlayerTransformer(user.getIdLong(), message.getGuild().getIdLong(), new DataRow(DatabaseAdapter.getPlayer(userID)));
         } catch (NullPointerException e) {
             log.info("Creating entry for Player:" + userID + " in Guild: " + message.getGuild().getId());
+            e.printStackTrace();
             DatabaseAdapter.insertNewPlayer(user, message.getGuild());
         }
         return new PlayerTransformer(user.getIdLong(), message.getGuild().getIdLong(), new DataRow(DatabaseAdapter.getPlayer(userID)));

@@ -13,6 +13,7 @@ import marshmallow.config.ConstantsConfig;
 import marshmallow.database.DatabaseManager;
 import marshmallow.handlers.MainEventHandler;
 import marshmallow.gui.ConsoleColor;
+import marshmallow.language.I18n;
 import marshmallow.middleware.MiddlewareManager;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -101,6 +102,9 @@ public class Marshmallow {
         log.info("Registering commands...");
         loadPackage("marshmallow.commands", CommandManager::register);
         log.info("Added {} commands", CommandManager.getCommands().size());
+
+        log.info("Preparing I18n");
+        I18n.start(this);
 
         try {
             shardManager = buildShardManager();

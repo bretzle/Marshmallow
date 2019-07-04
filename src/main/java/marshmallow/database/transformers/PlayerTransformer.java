@@ -2,9 +2,6 @@ package marshmallow.database.transformers;
 
 import marshmallow.database.collection.DataRow;
 
-import java.util.List;
-import java.util.TreeMap;
-
 public class PlayerTransformer extends Transformer {
 
     private final long userID;
@@ -32,12 +29,12 @@ public class PlayerTransformer extends Transformer {
             active = data.getBoolean("active", false);
 
             // todo set experience values
-            List<TreeMap> guilds = (List<TreeMap>) data.get("experiences");
-            for (TreeMap map : guilds) {
-                if (map.get("id").equals(String.valueOf(guildID))) {
-                    this.experience = (long) map.get("value");
-                }
-            }
+//            List<TreeMap> guilds = (List<TreeMap>) data.get("experiences");
+//            for (TreeMap map : guilds) {
+//                if (map.get("id").equals(String.valueOf(guildID))) {
+//                    this.experience = (long) map.get("value");
+//                }
+//            }
 
             reset();
         }

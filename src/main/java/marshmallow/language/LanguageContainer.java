@@ -3,7 +3,7 @@ package marshmallow.language;
 import marshmallow.config.yaml.YamlConfiguration;
 
 import javax.annotation.Nonnull;
-import java.io.File;
+import java.io.InputStreamReader;
 
 public class LanguageContainer {
 
@@ -13,7 +13,11 @@ public class LanguageContainer {
     LanguageContainer(@Nonnull Language language) {
         this.language = language;
 
-        config = new YamlConfiguration(new File("langs", language.getCode()+".yml"));
+        config = new YamlConfiguration(
+                new InputStreamReader(
+                        getClass().getClassLoader().getResourceAsStream("langs/"+language.getCode()+".yml")
+                )
+        );
     }
 
     /**

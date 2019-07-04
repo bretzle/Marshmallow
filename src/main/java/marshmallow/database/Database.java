@@ -18,7 +18,7 @@ public class Database {
     public Database(DatabaseManager dbm) throws UnknownHostException {
         this.databaseManager = dbm;
 
-        database = dbm.getMarshmallow().getConfig().getString("database.database");
+        database = dbm.getMarshmallow().getConfig().getString("database.databaseName");
         host = dbm.getMarshmallow().getConfig().getString("database.host");
         port = dbm.getMarshmallow().getConfig().getString("database.port");
 
