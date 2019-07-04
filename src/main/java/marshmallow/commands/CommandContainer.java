@@ -46,4 +46,8 @@ public class CommandContainer {
     public String getDefaultPrefix() {
         return category.getPrefix();
     }
+
+    public CommandPriority getPriority() {
+        return command.getCommandPriority();
+    }
 }

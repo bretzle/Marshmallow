@@ -23,4 +23,6 @@ public class Constants {
     public static final String PURCHASES_TABLE_NAME = "purchases";
 
     public static final String SOURCE_URI = "https://github.com/bretzle/Marshmallow/tree/master/src/main/java/marshmallow/commands/%s/%s.java";
+
+    public static final String DEFAULT_COMMAND_PREFIX = "?";
 }

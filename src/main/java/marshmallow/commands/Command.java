@@ -1,6 +1,7 @@
 package marshmallow.commands;
 
 import marshmallow.Marshmallow;
+import net.dv8tion.jda.core.entities.Message;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +34,10 @@ public abstract class Command {
 
     public abstract List<String> getMiddleware();
 
+    public CommandPriority getCommandPriority() {
+        return CommandPriority.NORMAL;
+    }
+
     public abstract Category getCategory();
 
     public abstract List<CommandGroup> getGroups();
@@ -58,5 +63,9 @@ public abstract class Command {
     @Override
     public int hashCode() {
         return Objects.hash(this);
+    }
+
+    public final String generateCommandPrefix(Message message) {
+        return CategoryHandler.fromCommand(this).getPrefix(message);
     }
 }
