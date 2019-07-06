@@ -1,5 +1,5 @@
 
-enviroment: 'development'
+environment: 'production'
 
 discord:
   clientID: 'clientID'

@@ -19,6 +19,7 @@ import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.utils.SessionControllerAdapter;
 import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.reflections.Reflections;
@@ -42,6 +43,7 @@ public class Marshmallow {
     private final DatabaseManager database;
     private final BotAdmin botAdmins;
     private ShardManager shardManager = null;
+    private static Environment applicationEnvironment;
 
     public static final Gson gson = new GsonBuilder()
             .disableHtmlEscaping()
@@ -58,6 +60,7 @@ public class Marshmallow {
         log.debug("====================================================\n");
 
         log.info("Bootstrapping Marshmallow v" + AppInfo.getAppInfo().version);
+        Reflections.log = null;
 
         config = new Configuration(this, null, "config.yml");
         constants = new ConstantsConfig(this);
@@ -75,8 +78,17 @@ public class Marshmallow {
         botAdmins = new BotAdmin(this, Collections.unmodifiableSet(new HashSet<>(
                 config.getStringList("botAccess")
         )));
-
         log.info("Added {} Bot Admins.", config.getStringList("botAccess").size());
+
+        applicationEnvironment = Environment.fromName(config.getString("environment", Environment.PRODUCTION.getName()));
+        if (applicationEnvironment == null) {
+            throw new IllegalArgumentException("Environment must be development or production");
+        }
+        log.info("Starting application in \"{}\" mode", applicationEnvironment.getName());
+        if (applicationEnvironment.equals(Environment.DEVELOPMENT)) {
+            RestAction.setPassContext(true);
+            log.info("Enabling rest action context parsing and printing stack traces.");
+        }
 
         log.info("Registering and connecting to database");
         database = new DatabaseManager(this);
@@ -101,7 +113,7 @@ public class Marshmallow {
 
         log.info("Registering commands...");
         loadPackage("marshmallow.commands", CommandManager::register);
-        log.info("Added {} commands", CommandManager.getCommands().size());
+        log.info("Registered {} commands successfully!", CommandManager.getCommands().size());
 
         log.info("Preparing I18n");
         I18n.start(this);
